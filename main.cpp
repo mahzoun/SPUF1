@@ -1,6 +1,10 @@
 #include <iostream>
-
+#include <bitset>
+#include "PUF.h"
+using namespace std;
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    PUF puf;
+    bitset<128> S;
+    bool Auth = puf.Auth(S);
     return 0;
 }
