@@ -61,7 +61,7 @@ std::bitset<CH_SIZE> PUF::Sbox(std::bitset<CH_SIZE> S) {
     for (int i = 0; i < CH_SIZE; i += 8) {
         std::bitset<8> temp;
         for (int j = 0; j < 8; j++)
-            temp[j] = R[i + j];
+            temp[j] = S[i + j];
         uint32_t sbox_input = temp.to_ulong();
         uint32_t sbox_output = aes_sbox[sbox_input];
         for (int j = 0; j < 8; j++) {
