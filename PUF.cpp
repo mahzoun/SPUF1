@@ -116,7 +116,7 @@ bitset<CH_SIZE> PUF::Random(bitset<CH_SIZE> S)// Random 128 bits state
 	{
 		S[i] = rand() % 2;
 	}
-	std::cout << S << endl;
+//	std::cout << S << endl;
 	return S;
 }
 template<typename T>
