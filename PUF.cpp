@@ -35,7 +35,7 @@ std::bitset<CH_SIZE / 2> PUF::Stage_1(std::bitset<CH_SIZE> S) {
     }
 //    std::cout << "holdrands are " << holdrand[63]  << " " << holdrand[31]<< std::endl;
 //	std::cout << "Output of ES63 and ES31:  " << R[63]  << " " << R[31]<< std::endl;
-    cout << R << endl;
+//    cout << R << endl;
 	/*std::cout << "Output of ES0 and ES32:  " << R[0] << R[32] << std::endl;
 	std::cout << "Output of ES1 and ES33:  " << R[1] << R[33]<< std::endl;
 	std::cout << "Output of ES2 and ES34:  " << R[2] << R[34] << std::endl;
