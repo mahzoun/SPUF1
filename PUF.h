@@ -33,7 +33,7 @@ static const uint32_t aes_sbox[256] = {
 };
 
 
-static uint32_t RAND1[
+static uint32_t RAND11[
 	CH_SIZE / 2] = {
 			0x29b9eeb1, 0xa30aa7c6, 0x6364c68a, 0xb4dac955, 0x7d9f40c7, 0x85208bf0, 0x45571e19,
 			0x689a8495, 0xa02d1461, 0xf58a50af, 0xbd500599, 0x5bab9480, 0x31fea2a9, 0x7566ea2,
@@ -47,7 +47,7 @@ static uint32_t RAND1[
 			0xbd29e4a5
 };
 
-static uint32_t RAND2[CH_SIZE / 2] = {
+static uint32_t RAND22[CH_SIZE / 2] = {
 		0x15da1dce, 0x582978f6, 0xa0f68232, 0xb0de0f47, 0x8f8488b0, 0x7fc08313, 0x633b560,
 		0x5077ffe3, 0xc9b25516, 0x97c7d6ef, 0xdf577144, 0x7cc24ac8, 0x3a2f8263, 0xa8267a3f,
 		0x1dcf336a, 0xf39be0c3, 0x4db92105, 0x6e4e3810, 0xedeba02d, 0x48c3de7d, 0xeee96ab6,
@@ -63,7 +63,15 @@ static uint32_t RAND2[CH_SIZE / 2] = {
 
 class PUF {
 public:
-
+    uint32_t RAND1[CH_SIZE/2], RAND2[CH_SIZE/2];
+    PUF(){
+        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::mt19937 mt_rand(seed);
+        for(int i = 0; i < CH_SIZE/2; i++)
+            RAND1[i] = mt_rand();
+        for(int i = 0; i < CH_SIZE/2; i++)
+            RAND2[i] = mt_rand();
+    }
     std::bitset<CH_SIZE/2> Stage_1(std::bitset<CH_SIZE>);
     std::bitset<CH_SIZE> Sbox(std::bitset<CH_SIZE>);
     std::bitset<CH_SIZE/2> Stage_2(std::bitset<CH_SIZE>);

@@ -47,25 +47,27 @@ std::bitset<CH_SIZE / 2> PUF::Stage_1(std::bitset<CH_SIZE> S) {
 
 std::bitset<CH_SIZE/2> PUF::Stage_2(std::bitset<CH_SIZE> S) {
     std::bitset<CH_SIZE/2> R;
+    static long holdrand[64];
+    for(int j = 0; j < 64; j++)
+        holdrand[j] = 0;
     for (int i = 0; i < 64; i++) { // generate random output of ES1_i
-        static long holdrand = 0L;
         if (i < 32) {
             int idx = i * 4;
             for (int j = 0; j < 4; j++) {
-                holdrand *= 2;
-                holdrand += S[idx + j];
+                holdrand[i] *= 2;
+                holdrand[i] += S[idx + j];
             }
         }
         if (i >= 32) {
             int idx = (i - 32) * 4;
             for (int j = 0; j < 4; j++) {
-                holdrand *= 2;
-                holdrand += S[idx + j];
+                holdrand[i] *= 2;
+                holdrand[i] += S[idx + j];
             }
         }
-        holdrand += RAND2[i];
-        holdrand = (((holdrand * 214013L + 2531011L) >> 16) & 0x7fff) % 2;
-        R[i] = holdrand;
+        holdrand[i] += RAND2[i];
+        holdrand[i] = (((holdrand[i] * 214013L + 2531011L) >> 16) & 0x7fff) % 2;
+        R[i] = holdrand[i];
     }
     return R;
 }
@@ -88,10 +90,10 @@ std::bitset<CH_SIZE> PUF::Sbox(std::bitset<CH_SIZE> S) {
 
 bool PUF::Auth(std::bitset<CH_SIZE> S) {
     using namespace std;
-    cout << "Initial state is: " << S << endl;
+//    cout << "Initial state is: " << S << endl;
     bitset<CH_SIZE / 2> S_after_Stage1;
     S_after_Stage1 = Stage_1(S);
-    cout << "Output of Stage 1 is: " << S_after_Stage1 << endl;
+//    cout << "Output of Stage 1 is: " << S_after_Stage1 << endl;
     bitset<CH_SIZE> Sbox_input;
     for(int i = 0 ; i < 16; i++){
         for(int j = 0; j < 8; j++){
@@ -99,12 +101,12 @@ bool PUF::Auth(std::bitset<CH_SIZE> S) {
         }
     }
     S = Sbox(Sbox_input);
-    std::cout << "Output of Sbox is: " << S << endl;
+//    std::cout << "Output of Sbox is: " << S << endl;
     bitset<CH_SIZE / 2> S_after_Stage2;
     S_after_Stage2 = Stage_2(S);
-    std::cout << "Output of Stage 2 is: " << S_after_Stage2 << endl;
+//    std::cout << "Output of Stage 2 is: " << S_after_Stage2 << endl;
     bool Auth = S_after_Stage2.count() % 2;
-    std::cout << "Auth is: " << Auth << endl;
+//    std::cout << "Auth is: " << Auth << endl;
     return Auth;
 }
 
@@ -154,13 +156,13 @@ vector<unsigned long> PUF::Intersect(vector<unsigned long> vector1, vector<unsig
 
 	it = set_intersection(vector1.begin(), vector1.end(), vector2.begin(), vector2.end(), v.begin());
 
-	std::cout << "\nCommon elements:\n";
+//	std::cout << "\nCommon elements:\n";
 	for (st = v.begin(); st != it; ++st)
 	{
-		std::cout << *st << ", ";
+//		std::cout << *st << ", ";
 		v_inters.push_back(*st);
 	}
-	std::cout << '\n';
+//	std::cout << '\n';
 	return v_inters;
 }
 
