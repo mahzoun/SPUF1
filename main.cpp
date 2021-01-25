@@ -132,15 +132,14 @@ struct database {
 };
 
 vector<database> db;
+PUF puf;
 
 void find_collision(int position) { // find collision classes of ES1_position
-    PUF puf;
     bitset<128> S, S1;
     vector<int> Intercep1, Intercept0, Challange;
     vector<vector<unsigned long>> OutputSets1, OutputSets0;// store the subsets from each experiment
     int numbOfExp = 7;
-
-    for (int i = 0; i < numbOfExp; i++)//repeat the experiment numbOfExp times
+    for (int t = 0; t < numbOfExp; t++)//repeat the experiment numbOfExp times
     {
         S = puf.Random(S);
         vector<unsigned long> Out1, Out0;//the subsets leading to responce 1 and 0
@@ -198,18 +197,21 @@ void find_collision(int position) { // find collision classes of ES1_position
             Collisions[index].C[i].push_back(EquivClases[i][j]);
         }
     }
+//    cout << dec << "\n Equivalence classes:\t" << position << endl;
+//    Print(EquivClases);
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     srand(time(NULL));
-    PUF puf;
+//    PUF puf;
     for (int T = 124; T >= 64; T -= 4) { // find collision class for class 63-T, 31 - T
         find_collision(T);
     }
     bool collision_founded = false;
 
     while (collision_founded == false) {
+        //Check if the collision has not yet found after expected number of rounds.
         if (db.size() % 1000 == 0 & db.size() > (1 << 16)) {
             cout << "Warning, db size is too big: \t" << db.size() << endl;
         }
@@ -218,7 +220,6 @@ int main() {
         input = puf.Random(input);
         for (int i = 0; i < 64; i++)
             input[i] = 0;
-
 
         // Check the db for possible collisions
         bitset<32> plaintext_collision; // we tested that this works correctly :D
@@ -259,6 +260,34 @@ int main() {
             new_entry.response = puf.Auth(input);
             db.push_back(new_entry);
         }
+    }
+            cout << "_____________________\n";
+    //generate new plaintexts that we already know the answer
+    for (int I = 0; I < 1024; I++) {
+        bitset<128> input;
+//        cout << db[I].Class << "\t" << db[I].response << endl;
+        for (int i = 31; i >= 1; i -= 2) { // i and i - 1 represents the collision class for pair ES1 boxes 63 - i
+            int temp = db[I].Class[i] * 2 + db[I].Class[i - 1];
+//            Print(Collisions[i/2].C[temp]);
+//            cout << "Class elements -- > ";
+//            for(int j = 0; j < Collisions[15 - (i/2)].C[temp].size(); j++) {
+//                cout << Collisions[15 - (i / 2)].C[temp][j] << "\t";
+//            }
+//            cout << endl;
+            for(int j = 0; j < Collisions[15 - (i/2)].C[temp].size(); j++) {
+                bitset<128> test_input;
+                bitset<4> temper = Collisions[15 - (i / 2)].C[temp][j];
+                for(int k = 0; k < 4; k++){
+                    test_input[64 + (i-1)*2 + k] = temper[k];
+                }
+//                cout << test_input << "\t" << puf.Auth(test_input) << endl;
+            }
+            bitset<4> cur = Collisions[15 - (i / 2)].C[temp][0];
+//            cout << 15 - (i/2) << "\t" << cur << "\t" << Collisions[15 - (i / 2)].C[temp][0] << endl;
+            for (int j = 0; j < 4; j++)
+                input[64 + (i - 1) * 2 + j] = cur[j];
+        }
+        fout << input << "\t" << db[I].response  << "\t" << puf.Auth(input) << endl;
     }
     return 0;
 }
